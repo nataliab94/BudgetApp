@@ -3,35 +3,26 @@
 Operation BudgetManager::addOperationDetails(const Type &type)
 {
     Operation operation;
-    string typeDescription, tempDate, tempAmount, fileName;
+    string typeDescription, tempDate, tempAmount;
 
-    switch(type)
-    {
-    case INCOME:
+    if (type == INCOME) {
         operation.id = incomeFile.getLastId() + 1;
         typeDescription = "income";
-        break;
-    case EXPENSE:
+    } else {
         operation.id = expenseFile.getLastId() + 1;
         typeDescription = "expense";
-        break;
     }
 
     operation.userId = LOGGED_USER_ID;
 
     cout << "Enter " << typeDescription << " date. Press 'y' if you want to enter the current date, or 'n' to enter a specific date: ";
-    if (Utils::getCharacter() == 'y')
-    {
+    if (Utils::getCharacter() == 'y') {
         tempDate = dateMethods.convertIntDateToStringWithDashes(dateMethods.getCurrentDate());
-    }
-    else
-    {
-        do
-        {
+    } else {
+        do {
             cout << "Enter " << typeDescription << " date (YYYY-MM-DD): ";
             tempDate = Utils::readLine();
-        }
-        while (!dateMethods.validateDate(tempDate));
+        } while (!dateMethods.validateDate(tempDate));
     }
 
     operation.date = dateMethods.convertStringDateToInt(tempDate);
@@ -39,27 +30,29 @@ Operation BudgetManager::addOperationDetails(const Type &type)
     cout << "Enter " << typeDescription << " name: ";
     operation.item = Utils::readLine();
 
-    do
-    {
+    do {
         cout << "Add " << typeDescription << " amount with up to two decimal places: ";
         tempAmount = Utils::readLine();
-    }
-    while (!CashMethods::validateAmount(tempAmount));
+    } while (!CashMethods::validateAmount(tempAmount));
 
     operation.amount = stod(tempAmount);
 
-    if (type == INCOME)
-    {
+    if (type == INCOME) {
         incomeFile.addOperationToFile(operation);
-    }
-    else if (type == EXPENSE)
-    {
+    } else if (type == EXPENSE) {
         expenseFile.addOperationToFile(operation);
     }
 
 
+    incomes = incomeFile.loadOperationsFromFile(LOGGED_USER_ID);
+    expenses = expenseFile.loadOperationsFromFile(LOGGED_USER_ID);
+
+
+
     return operation;
 }
+
+
 
 
 
